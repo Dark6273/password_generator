@@ -34,7 +34,7 @@ Create high security passwords
 git clone https://github.com/Dark6273/password_generator.git
 cd password_generator
 pip3 install -r requirements.txt
-python3 main.py
+python3 pass_generator.py
 ```
 
 ## Contact us
