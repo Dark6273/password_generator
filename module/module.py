@@ -1,26 +1,40 @@
 import view.view as view
 from time import sleep
 from random import sample
+from cryptography.fernet import Fernet
 
 
-DATA = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890><?/:"L{|})(_+-=#@$&![%\]*'
+DATA = 'qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890><?/:"L{|})(_+-=#@$&![%]*'
+# you can convert code to marshal code to hide password
+KEY = b'bX1Wt_qoUmUN-hxEM8CriI5O9XqvGGC_SIar1So9AHg='
+fernet = Fernet(KEY)
 
 
 def write(name,password):
-    file = open('data/password.txt', 'a+')
+    data = get_data()
+    data.append("{},{}".format(name, password))
     
-    text=name + ',' + password + '\n' 
-    file.write(text)
-    file.close()
+    data = bytes("\n".join(data), 'utf-8')
+    data = fernet.encrypt(data)
+    
+    with open("data/password.txt", "w+") as file:
+        file.write(str(data))
 
 
 def get_data():
-    with open('data/password.txt') as f:
-        data = f.readlines()
+    try:
+        with open('data/password.txt') as f:
+            data = f.read()
+        data = data.replace("b'", "")
+        data = data.replace("'", "")
+            
+        data = fernet.decrypt(bytes(data, encoding='utf8')).decode("utf8").split("\n")
+            
+        data = [d.strip() for d in data]
         
-    data = [d.strip() for d in data]
-    
-    return data
+        return data
+    except:
+        return []
 
 
 def remove(data):
@@ -45,7 +59,7 @@ def remove(data):
             file.write(i + '\n')
         file.close()
     
-    view.show('The Operation was successfull','')
+    view.show('The Operation was successful','')
     sleep(1)
     main()
 
@@ -61,7 +75,7 @@ def export(data):
     
     file.close()
 
-    view.show('Data was succlessfully export','')
+    view.show('Data was successfully export','')
     sleep(1)
     status()
 
